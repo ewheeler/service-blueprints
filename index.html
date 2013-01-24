@@ -9,7 +9,7 @@
 			.row {
 				border: 1px solid #CCCCCC;;
 			}
-			.actor {
+			.actor-label {
 				position: absolute;
 				padding-left: 100px;
 				padding-top: 30px;
@@ -50,11 +50,11 @@
 			  .data(actorNames)
 				.enter().append("div")
 				.attr('class', function(d) { return d + "-row row"; })
-				.html(function(d,i) { return "<span class='actor'>" + d + "</span>" ;});
+				.html(function(d,i) { return "<span class='actor-label'>" + d + "</span>" ;});
 
 			/* add svg elements and icons to divs */
 			var rows = Pablo('.row').each(function(d, i){
-					var row = Pablo(d).root({class: actorNames[i], width: 1000, height: 94});
+					var row = Pablo(d).root({class: actorNames[i] + '-icon icon', width: 1000, height: 94});
 					var icon = Pablo[actorNames[i]]({x: 5, y: 10}).appendTo(row);
 					/* grab fill color */
 					var color = icon.attr('fill');
