@@ -86,7 +86,7 @@ Pablo.template('clinic', function(options){
 		return Pablo.g({class: 'clinic'})
 				.append('path', {d: pathString, fill: fill})
 				.append('path', {d: plusString, fill: background})
-				.transform('translate', (x - 30) + ' ' + (y - 255))
+				.transform('translate', (x - 30) + ' ' + (y - 225))
 });
 
 Pablo.template('phone', function(options){

@@ -4,9 +4,24 @@
     <title>service blueprint</title>
     <script type="text/javascript" src="pablo.min.js"></script>
     <script type="text/javascript" src="templates.js"></script>
+    <script type="text/javascript" src="d3.min.js"></script>
+		<style>
+			.row {
+				border: 1px solid #CCCCCC;;
+			}
+			.actor {
+				position: absolute;
+				padding-left: 100px;
+				padding-top: 30px;
+				text-transform: uppercase;
+				color: #666666;
+				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-size: 80%;
+			}
+		</style>
   </head>
   <body>
-    <div id="paper" style="background-color: #ffa;width:800px;height:600px;"></div>
+    <div id="paper" style="background-color: #ffa;width:1000px;height:600px;"></div>
 		<script type="text/javascript">
 			var timeline = {
 				0: {'child': '1st trimester'},
@@ -19,6 +34,8 @@
 				645: {'child': 'infancy'},
 				1000: {'mother': 'postpartum/breastfeeding'},
 		 	}
+
+			/* TODO introspect these from templates.js? */
 			var actorNames = [
 				'child',
 				'mother',
@@ -28,16 +45,29 @@
 				'country',
 			];
            
-			var paperElement = Pablo('#paper');
-			var paper = Pablo(paperElement).root({width: 800, height: 600});
+			/* create divs for rows */
+			d3.select('#paper').selectAll("div")
+			  .data(actorNames)
+				.enter().append("div")
+				.attr('class', function(d) { return d + "-row row"; })
+				.html(function(d,i) { return "<span class='actor'>" + d + "</span>" ;});
 
-			Pablo.mother().appendTo(paper);
-			Pablo.child({x: 5, y: 100}).appendTo(paper);
-			Pablo.chw({x: 8, y: 150}).appendTo(paper);
-			Pablo.clinic({x: 5, y: 250}).appendTo(paper);
-			Pablo.district({x: 5, y: 280}).appendTo(paper);
-			Pablo.country({x: 5, y: 340}).appendTo(paper);
-			Pablo.phone({x: 5, y: 400}).appendTo(paper);
+			/* add svg elements and icons to divs */
+			var rows = Pablo('.row').each(function(d, i){
+					var row = Pablo(d).root({class: actorNames[i], width: 1000, height: 94});
+					var icon = Pablo[actorNames[i]]({x: 5, y: 10}).appendTo(row);
+					/* grab fill color */
+					var color = icon.attr('fill');
+					if (color === null){
+					  / no fill color? probably a group of paths, so check the first child */
+					  color = icon[0].childNodes[0].attributes['fill'].nodeValue;
+					};
+					/* set color of row (so its easy to access later) */
+					row[0].parentNode.style.color = color;
+					/* set display color of label text */
+					row[0].previousSibling.style.color = color;
+			});
+
 		</script>
   </body>
 </html>
