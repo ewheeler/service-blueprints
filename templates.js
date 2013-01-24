@@ -1,6 +1,6 @@
 
 Pablo.template('child', function(options){
-	  var config = Pablo.extend({x: 20, y: 80, fill: '#00AEEF'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#00AEEF'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -10,12 +10,12 @@ Pablo.template('child', function(options){
 			  class: 'child',
 				d: pathString,
 				fill: fill,
-				transform: 'translate('+x+','+y+')'
+				transform: 'translate('+ (x + 5) + ',' + (y + 10) +')'
 		});
 });
 
 Pablo.template('mother', function(options){
-	  var config = Pablo.extend({x: -10, y: -40, fill: '#39B54A'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#39B54A'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -25,12 +25,12 @@ Pablo.template('mother', function(options){
 			  class: 'mother',
 				d: pathString,
 				fill: fill,
-				transform: 'translate('+x+','+y+')'
+				transform: 'translate('+ (x - 30) + ',' + (y - 55) +')'
 		});
 });
 
 Pablo.template('country', function(options){
-	  var config = Pablo.extend({x: 100, y: -80, fill: '#92278F'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#92278F'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -42,12 +42,12 @@ Pablo.template('country', function(options){
 				fill: fill,
 				'stroke-linejoin':'round',
 				'stroke-linecap':'round',
-				transform: 'translate('+x+','+y+')'
+				transform: 'translate('+ (x - 20) + ',' + (y - 285) +')'
 		});
 });
 
 Pablo.template('district', function(options){
-	  var config = Pablo.extend({x: 50, y: -60, fill: '#92278F', background: '#FFFFFF'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#92278F', background: '#FFFFFF'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -71,11 +71,11 @@ Pablo.template('district', function(options){
 				.append('rect', {fill: background, x: "45.363", y: "281.446", width: "4.347", height: "2.926"})
 				.append('rect', {fill: background, x: "52.593", y: "281.446", width: "4.346", height: "2.926"})
 				.append('rect', {fill: background, x: "59.961", y: "281.446", width: "4.346", height: "2.926"})
-				.transform('translate', x+' '+y)
+				.transform('translate', (x - 30) + ' ' + (y - 255))
 });
 
 Pablo.template('clinic', function(options){
-	  var config = Pablo.extend({x: -10, y: -30, fill: '#92278F', background: '#FFFFFF'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#92278F', background: '#FFFFFF'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -86,11 +86,11 @@ Pablo.template('clinic', function(options){
 		return Pablo.g({class: 'clinic'})
 				.append('path', {d: pathString, fill: fill})
 				.append('path', {d: plusString, fill: background})
-				.transform('translate', x+' '+y)
+				.transform('translate', (x - 30) + ' ' + (y - 255))
 });
 
 Pablo.template('phone', function(options){
-	  var config = Pablo.extend({x: 90, y: -190, fill: '#92278F', background: '#FFFFFF'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#92278F', background: '#FFFFFF'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -115,11 +115,11 @@ Pablo.template('phone', function(options){
 				.append('path', {fill: background, d: "M53.839,346.123c-0.331,1.026-0.695,1.83-0.807,1.795c-0.109-0.041,0.066-0.903,0.4-1.929 c0.333-1.026,0.696-1.827,0.807-1.797C54.35,344.231,54.174,345.094,53.839,346.123"})
 				.append('path', {fill: background, d: "M44.963,357.481c0,0-0.199,0.177-0.115,0.345c0.094,0.174,0.709,1.812,0.996,1.948 c0.319,0.06,1.332-0.473,1.116-0.641c-0.373-0.289-0.985-1.381-1.119-1.707C45.606,357.408,44.963,357.481,44.963,357.481"})
 				.append('path', {fill: background, d: "M53.907,360.381c0,0,0.061,0.265-0.112,0.349c-0.174,0.088-1.63,1.049-1.947,0.992 c-0.289-0.142-0.802-1.162-0.528-1.175c0.474-0.014,1.608-0.537,1.91-0.723C53.427,359.938,53.907,360.381,53.907,360.381"})
-				.transform('translate', x+' '+y)
+				.transform('translate', (x - 35) + ' ' + (y - 340))
 });
 
 Pablo.template('chw', function(options){
-	  var config = Pablo.extend({x: 100, y: -130, fill: '#92278F', background: '#FFFFFF'}, options);
+	  var config = Pablo.extend({x: 0, y: 0, fill: '#92278F', background: '#FFFFFF'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -149,5 +149,5 @@ Pablo.template('chw', function(options){
 				.append('path', {fill: background, d: "M55.457,213.451c0,0-0.068,0.061-0.04,0.118c0.032,0.061,0.242,0.618,0.338,0.664 c0.11,0.022,0.454-0.16,0.38-0.216c-0.126-0.1-0.334-0.47-0.38-0.582C55.676,213.428,55.457,213.451,55.457,213.451"})
 				.append('path', {fill: background, d: "M58.502,214.439c0,0,0.02,0.09-0.038,0.118c-0.061,0.032-0.554,0.36-0.664,0.34 c-0.098-0.048-0.274-0.396-0.18-0.399c0.162-0.007,0.548-0.185,0.649-0.246C58.34,214.289,58.502,214.439,58.502,214.439"})
 
-				.transform('translate', x+' '+y)
+				.transform('translate', (x - 35) + ' ' + (y - 185))
 });

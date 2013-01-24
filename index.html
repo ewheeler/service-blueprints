@@ -32,12 +32,12 @@
 			var paper = Pablo(paperElement).root({width: 800, height: 600});
 
 			Pablo.mother().appendTo(paper);
-			Pablo.child().appendTo(paper);
-			Pablo.country().appendTo(paper);
-			Pablo.district().appendTo(paper);
-			Pablo.clinic().appendTo(paper);
-			Pablo.phone().appendTo(paper);
-			Pablo.chw().appendTo(paper);
+			Pablo.child({x: 5, y: 100}).appendTo(paper);
+			Pablo.chw({x: 8, y: 150}).appendTo(paper);
+			Pablo.clinic({x: 5, y: 250}).appendTo(paper);
+			Pablo.district({x: 5, y: 280}).appendTo(paper);
+			Pablo.country({x: 5, y: 340}).appendTo(paper);
+			Pablo.phone({x: 5, y: 400}).appendTo(paper);
 		</script>
   </body>
 </html>
