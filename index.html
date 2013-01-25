@@ -21,7 +21,8 @@
 		</style>
   </head>
   <body>
-    <div id="paper" style="background-color: #ffa;width:1000px;height:600px;"></div>
+    <div id="paper" style="background-color: #ffa; width: 1000px; height: 600px;"></div>
+		<div id="tmp" style="background-color: #faa;width: 1000px; height: 200px;"></div>
 		<script type="text/javascript">
 			var timeline = {
 				0: {'child': '1st trimester'},
@@ -37,8 +38,8 @@
 
 			/* TODO introspect these from templates.js? */
 			var actorNames = [
-				'child',
 				'mother',
+				'child',
 				'chw',
 				'clinic',
 				'district',
@@ -67,6 +68,11 @@
 					/* set display color of label text */
 					row[0].previousSibling.style.color = color;
 			});
+			var tmp = Pablo('#tmp').root();
+			Pablo.chevron({shape: 'narrow', fill: '#EAF4E7'}).appendTo(tmp);
+			Pablo.chevron({x: 13}).appendTo(tmp);
+			Pablo.arrow({x: 27}).appendTo(tmp);
+			Pablo.fletch({y: 60}).appendTo(tmp);
 
 		</script>
   </body>
