@@ -159,27 +159,34 @@ Pablo.template('chw', function(options){
 });
 
 Pablo.template('arrow', function(options){
-	  var config = Pablo.extend({height: 50, width: 113, x: 0, y: 0, fill: '#39B54A', background: '#FFFFFF'}, options);
+	  var config = Pablo.extend({text: '', textColor: '#FFFFFF', height: 50, width: 113, x: 0, y: 0, fill: '#39B54A', background: '#FFFFFF'}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
 				background = config.background,
 				width = config.width,
 				height = config.height,
+				text = config.text,
+				textColor = config.textColor,
 				indent = 10,
 				points = [0, height, indent, (height/2), 0, 0, width, 0, (width + indent), (height/2), width, height];
 
-		return Pablo.polygon({
-			  class: 'icon-component',
-				points: points.join(','),
-				fill: fill,
-				stroke: background,
-				'stroke-width': 3,
-				'stroke-miterlimit': 10,
-				'stroke-linejoin':'round',
-				'stroke-linecap':'round',
-		}).transform('scale', 1)
-			.transform('translate', (x + 5) + ' ' + (y + 5));
+    return Pablo.g({class: 'icon-component'})
+			.append(
+				Pablo.polygon({
+					points: points.join(','),
+					fill: fill,
+					stroke: background,
+					'stroke-width': 3,
+					'stroke-miterlimit': 10,
+					'stroke-linejoin':'round',
+					'stroke-linecap':'round',
+					}).transform('scale', 1)
+				.transform('translate', (x + 5) + ' ' + (y + 5)))
+			.append(
+				Pablo.text({x: x + (width/4), y: (height/1.65) + 6, width: 80, height: 80, fill: textColor, class: 'icon-label'})
+				.content(text)
+			)
 });
 
 Pablo.template('chevron', function(options){

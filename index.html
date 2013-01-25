@@ -17,24 +17,34 @@
 				color: #666666;
 				font-family: 'Helvetica Neue' Arial sans-serif;
 				font-size: 80%;
+				text-shadow: 0 1px rgba(0, 0, 0, 0.25);
+			}
+			.icon-label {
+				text-transform: uppercase;
+				color: #666666;
+				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-size: 75%;
+				font-weight: bold;
+				text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+				text-align: center;
 			}
 		</style>
   </head>
   <body>
-    <div id="paper" style="background-color: #ffa; width: 1000px; height: 600px;"></div>
+    <div id="paper" style="background-color: #fff; width: 1200px; height: 600px;"></div>
 		<div id="tmp" style="background-color: #faa;width: 1000px; height: 200px;"></div>
 		<script type="text/javascript">
-			var timeline = {
-				0: {'child': '1st trimester'},
-				94: {'child': '2nd trimester'},
-				188: {'child': '3rd trimester'},
-				280: {'mother': 'pregnancy'},
-				281: {
+
+			var timelineData = [
+				{94: {'child': '1st trimester'}},
+				{188: {'child': '2nd trimester'}},
+				{280: {'mother': 'pregnancy', 'child': '3rd trimester'}},
+				{281: {
 					'mother': 'labour and birth',
-					'child': 'birth'},
-				645: {'child': 'infancy'},
-				1000: {'mother': 'postpartum/breastfeeding'},
-		 	}
+					'child': 'birth'}},
+				{645: {'child': 'infancy'}},
+				{1000: {'mother': 'postpartum and breastfeeding', 'child': 'childhood'}},
+		 	]
 
 			/* TODO introspect these from templates.js? */
 			var actorNames = [
@@ -45,7 +55,9 @@
 				'district',
 				'country',
 			];
-           
+			var lighterShadeOf = {"#39B54A": "#D0E8CA", "#00AEEF": "#B9E5FB"}
+			var lightestShadeOf = {"#39B54A": "#EAF4E7", "#00AEEF": "#E1F4FD"}
+
 			/* create divs for rows */
 			d3.select('#paper').selectAll("div")
 			  .data(actorNames)
@@ -55,25 +67,88 @@
 
 			/* add svg elements and icons to divs */
 			var rows = Pablo('.row').each(function(d, i){
-					var row = Pablo(d).root({class: actorNames[i] + '-icon icon', width: 1000, height: 94});
+					var row = Pablo(d).root({class: actorNames[i] + '-container container', width: 1200, height: 94});
 					var icon = Pablo[actorNames[i]]({x: 5, y: 10}).appendTo(row);
 					/* grab fill color */
 					var color = icon.attr('fill');
 					if (color === null){
-					  / no fill color? probably a group of paths, so check the first child */
+					  /* no fill color? probably a group of paths, so check the first child */
 					  color = icon[0].childNodes[0].attributes['fill'].nodeValue;
 					};
 					/* set color of row (so its easy to access later) */
 					row[0].parentNode.style.color = color;
 					/* set display color of label text */
 					row[0].previousSibling.style.color = color;
+					var timeline = Pablo.g();
+					/* prepend light chevrons to mother and child timelines */
+					if (i <= 1){
+						Pablo.chevron({x: -26, shape: 'narrow', fill: lightestShadeOf[color]}).appendTo(timeline);
+						Pablo.chevron({x: -13, fill: lighterShadeOf[color]}).appendTo(timeline);
+					}
+					var previousKey = 0;
+					var offset = 3;
+					var minWidth = 30;
+					for (var j=0, l=timelineData.length; j<l; j++){
+						for (var key in timelineData[j]){
+							if (timelineData[j][key][actorNames[i]] !== undefined){
+								var milestone = timelineData[j][key][actorNames[i]];
+								var x = (offset + previousKey);
+								var width = (key - previousKey) > minWidth ? (key - previousKey) : minWidth;
+								Pablo.arrow({fill: color, x: x, width: width, text: milestone, textColor: '#333333'}).appendTo(timeline);
+								previousKey = parseInt(x + width);
+							}
+						}
+					}
+					/* append light chevrons to mother and child timelines */
+					if (i <= 1){
+						Pablo.chevron({x: 982, fill: lighterShadeOf[color]}).appendTo(timeline);
+						Pablo.chevron({x: 996, shape: 'narrow', fill: lightestShadeOf[color]}).appendTo(timeline);
+					}
+					timeline.appendTo(row);
+
+					var labelSelector = '.' + actorNames[i] + '-container .icon-label';
+					Pablo(labelSelector).each(function (d,i){
+							wordWrap(d, i);
+							/* until elem.moveToFront() is available, do it manually
+								https://github.com/dharmafly/pablo/issues/10 */
+							d.remove()
+							timeline.append(d)
+					});
+					timeline.transform('translate', '175 17')
 			});
+
 			var tmp = Pablo('#tmp').root();
 			Pablo.chevron({shape: 'narrow', fill: '#EAF4E7'}).appendTo(tmp);
 			Pablo.chevron({x: 13}).appendTo(tmp);
-			Pablo.arrow({x: 27}).appendTo(tmp);
+			Pablo.arrow({x: 27, text: 'hello world'}).appendTo(tmp);
 			Pablo.fletch({y: 60}).appendTo(tmp);
 
+			function wordWrap(d, i){
+				var words = d.textContent.split(' ');
+				var longestWordLength = Math.max.apply(Math, words.map(function (el) { return el.length }));
+				var line = new Array();
+				var word;
+				var textWidth = d.getBBox().width;
+				var parentWidth = d.parentNode.getBBox().width;
+				var x = parseInt(d.getAttributeNode("x").nodeValue);
+				var y = parseInt(d.getAttributeNode("y").nodeValue);
+				if ((parentWidth - 20) < textWidth){
+					d.textContent = '';
+					Pablo(d).transform('translate', '0 ' + ((words.length - 1) * 6));
+					do {
+						word = words.shift();
+						line.push(word);
+						var wordX = x;
+						var wordY = y - (words.length * 14);
+						if (word.length !== longestWordLength){
+							wordX = x + (((longestWordLength - word.length)/2) * 6.5);
+						}
+						Pablo.tspan({x: wordX, y: wordY, class: 'icon-label-tspan'})
+							.content(word)
+							.appendTo(d);
+					} while (words.length);
+				}
+			}
 		</script>
   </body>
 </html>
