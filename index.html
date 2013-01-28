@@ -4,15 +4,11 @@
     <title>service blueprint</title>
     <script type="text/javascript" src="pablo.min.js"></script>
     <script type="text/javascript" src="templates.js"></script>
-    <script type="text/javascript" src="d3.min.js"></script>
 		<style>
 			.row {
 				border: 1px solid #CCCCCC;;
 			}
 			.actor-label {
-				position: absolute;
-				padding-left: 100px;
-				padding-top: 30px;
 				text-transform: uppercase;
 				color: #666666;
 				font-family: 'Helvetica Neue' Arial sans-serif;
@@ -28,6 +24,11 @@
 				text-shadow: 0 1px rgba(255, 255, 255, 0.5);
 				text-align: center;
 			}
+			.touchpoint-label {
+				text-transform: uppercase;
+				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-size: 65%;
+			}
 		</style>
   </head>
   <body>
@@ -38,13 +39,32 @@
 			var timelineData = [
 				{94: {'child': '1st trimester'}},
 				{188: {'child': '2nd trimester'}},
-				{280: {'mother': 'pregnancy', 'child': '3rd trimester'}},
-				{281: {
+				{270: {'mother': 'pregnancy', 'child': '3rd trimester'}},
+				{271: {
 					'mother': 'labour and birth',
 					'child': 'birth'}},
 				{645: {'child': 'infancy'}},
 				{1000: {'mother': 'postpartum and breastfeeding', 'child': 'childhood'}},
 		 	]
+
+			var touchpoints = [
+				{15: {'chw': 'pregnancy registered'}},
+				{80: {'chw': 'ANC reminder'}},
+				{90: {'clinic': 'ANC visit'}},
+				{160: {'chw': 'ANC reminder'}},
+				{170: {'clinic': 'ANC visit'}},
+				{230: {'chw': 'ANC reminder'}},
+				{240: {'clinic': 'ANC visit'}},
+				{281: {'chw': 'birth registered'}},
+				{285: {'clinic': 'birth emergency: clinic notified', 'point-type': 'optional'}},
+				{285: {'district': 'birth emergency: district notified', 'point-type': 'optional'}},
+				/*{271: {'chw': 'PNC reminder'}},
+				{276: {'clinic': 'PNC visit'}},
+				{307: {'chw': 'PNC reminder'}},
+				{312: {'clinic': 'PNC visit'}},
+				{630: {'chw': 'PNC reminder'}},
+				{635: {'clinic': 'PNC visit'}},*/
+			]
 
 			/* TODO introspect these from templates.js? */
 			var actorNames = [
@@ -58,64 +78,146 @@
 			var lighterShadeOf = {"#39B54A": "#D0E8CA", "#00AEEF": "#B9E5FB"}
 			var lightestShadeOf = {"#39B54A": "#EAF4E7", "#00AEEF": "#E1F4FD"}
 
-			/* create divs for rows */
-			d3.select('#paper').selectAll("div")
-			  .data(actorNames)
-				.enter().append("div")
-				.attr('class', function(d) { return d + "-row row"; })
-				.html(function(d,i) { return "<span class='actor-label'>" + d + "</span>" ;});
+			var paperWidth = 1200;
+			var paperHeight = 600;
+			var paper =  Pablo('#paper').root({width: paperWidth, height: paperHeight});
 
-			/* add svg elements and icons to divs */
-			var rows = Pablo('.row').each(function(d, i){
-					var row = Pablo(d).root({class: actorNames[i] + '-container container', width: 1200, height: 94});
-					var icon = Pablo[actorNames[i]]({x: 5, y: 10}).appendTo(row);
+			var rowHeight = (paperHeight / actorNames.length);
+			console.log('rowHeight: ' + rowHeight);
+			var rowWidth = paperWidth;
+			var timelineXOffset = rowHeight * 1.66;
+			console.log('timelineXOffset: ' + timelineXOffset);
+			var timelineYOffset = rowHeight / 6;
+			console.log('timelineYOffset: ' + timelineYOffset);
+
+			/* svg elements and icons for each actor */
+			for (var i=0, a=actorNames.length; i<a; i++){
+					var row = Pablo.g({class: actorNames[i] + '-row row', width: paperWidth, height: rowHeight});
+					var actor = Pablo.g({class: actorNames[i] + '-container container'})
+					var icon = Pablo[actorNames[i]]({x: 5, y: 10})
+						.appendTo(actor);
+					var actorLabel = Pablo.text({class: actorNames[i] + '-label actor-label', x: rowHeight, y: (rowHeight/2)})
+						.content(actorNames[i])
+						.appendTo(actor);
+					actorLabel.transform('translate', '-25 0');
+					actor.appendTo(row);
 					/* grab fill color */
 					var color = icon.attr('fill');
 					if (color === null){
 					  /* no fill color? probably a group of paths, so check the first child */
 					  color = icon[0].childNodes[0].attributes['fill'].nodeValue;
 					};
-					/* set color of row (so its easy to access later) */
-					row[0].parentNode.style.color = color;
-					/* set display color of label text */
-					row[0].previousSibling.style.color = color;
-					var timeline = Pablo.g();
+					actorLabel.attr('fill', color);
+
+					var timeline = Pablo.g({class: actorNames[i] + '-timeline timeline'});
+					timeline.attr({x: rowHeight, y: (rowHeight * i)});
 					/* prepend light chevrons to mother and child timelines */
 					if (i <= 1){
-						Pablo.chevron({x: -26, shape: 'narrow', fill: lightestShadeOf[color]}).appendTo(timeline);
-						Pablo.chevron({x: -13, fill: lighterShadeOf[color]}).appendTo(timeline);
+						Pablo.chevron({x: -(.025 * rowWidth), shape: 'narrow', fill: lightestShadeOf[color]}).appendTo(timeline);
+						Pablo.chevron({x: -(.0125 * rowWidth), fill: lighterShadeOf[color]}).appendTo(timeline);
 					}
-					var previousKey = 0;
-					var offset = 3;
-					var minWidth = 30;
+					/* keep track of previous element's right-most x position */
+					var previousX = 0;
+					/* add a little space between elements */
+					var offset = (paperWidth * .0005);
+					/* make small elements big enough to hold labels */
+					var minWidth = (rowHeight / 3);
 					for (var j=0, l=timelineData.length; j<l; j++){
 						for (var key in timelineData[j]){
 							if (timelineData[j][key][actorNames[i]] !== undefined){
 								var milestone = timelineData[j][key][actorNames[i]];
-								var x = (offset + previousKey);
-								var width = (key - previousKey) > minWidth ? (key - previousKey) : minWidth;
+								var x = (offset + previousX);
+								var width = ((.95 * key) - previousX) > minWidth ? ((.95 * key) - previousX) : minWidth;
 								Pablo.arrow({fill: color, x: x, width: width, text: milestone, textColor: '#333333'}).appendTo(timeline);
-								previousKey = parseInt(x + width);
+								previousX = parseInt(x + width);
 							}
 						}
 					}
 					/* append light chevrons to mother and child timelines */
 					if (i <= 1){
-						Pablo.chevron({x: 982, fill: lighterShadeOf[color]}).appendTo(timeline);
-						Pablo.chevron({x: 996, shape: 'narrow', fill: lightestShadeOf[color]}).appendTo(timeline);
+						Pablo.chevron({x: ((rowWidth - timelineXOffset - 51) - (.025 * rowWidth)), fill: lighterShadeOf[color]}).appendTo(timeline);
+						Pablo.chevron({x: ((rowWidth - timelineXOffset - 51) - (.0125 * rowWidth)), shape: 'narrow', fill: lightestShadeOf[color]}).appendTo(timeline);
 					}
 					timeline.appendTo(row);
+					row.appendTo(paper);
 
-					var labelSelector = '.' + actorNames[i] + '-container .icon-label';
+					var labelSelector = '.' + actorNames[i] + '-timeline .icon-label';
 					Pablo(labelSelector).each(function (d,i){
 							wordWrap(d, i);
 							/* until elem.moveToFront() is available, do it manually
 								https://github.com/dharmafly/pablo/issues/10 */
-							d.remove()
-							timeline.append(d)
+							d.remove();
+							timeline.append(d);
 					});
-					timeline.transform('translate', '175 17')
-			});
+
+					for (var j=0, l=touchpoints.length; j<l; j++){
+						for (var key in touchpoints[j]){
+							if (touchpoints[j][key][actorNames[i]] !== undefined){
+								var touchpoint = touchpoints[j][key][actorNames[i]];
+								var x = (key);
+								var height = (rowHeight / 3.3333);
+								var group = Pablo.g({id: 'touchpoint-' + (j + 1), class: actorNames[i] + '-touchpoint touchpoint'})
+								var label = Pablo.text({x: x, y: (height + 10), width: 20, height: 20})
+									.attr('fill', '#888888')
+									.attr('class', 'touchpoint-label')
+									.content(touchpoint)
+									.transform('rotate', '-25 ' + (x - 20) + ' ' + (height - 15));
+								group.append(label);
+								if (touchpoints[j][key]['point-type'] !== undefined){
+									if (touchpoints[j][key]['point-type'] === 'optional'){
+										group.append(Pablo.rect({fill: color, x: x, y:height,  width: 9, height: 9}));
+									}
+								} else {
+									group.append(Pablo.circle({fill: color, cx: x, cy:height,  r: 5}));
+								}
+								group.appendTo(timeline);
+							}
+						}
+					}
+					timeline.transform('translate', timelineXOffset + ' ' + timelineYOffset);
+					row.transform('translate', '0 ' + (rowHeight * i));
+			};
+
+			var points = '';
+			for (var j=0, l=touchpoints.length; j<l; j++){
+				Pablo('#touchpoint-' + (j+1)).each(function(d,i){
+					/* determine which row includes this touchpoint */
+					var thisRow;
+					var actorName = d.classList[0].split('-')[0];
+					for (var i=0, m=actorNames.length; i<m; i++){
+						if (actorNames[i] === actorName){
+							thisRow = i;
+							break;
+						}
+					}
+					/* find position of touchpoint, add offsets */
+					var thisX;
+					var thisY;
+					if (d.lastChild.hasOwnProperty("cx")){
+						thisX = timelineXOffset + parseInt(d.lastChild.getAttributeNode("cx").nodeValue);
+					} else {
+						/* add 4.5 so line is centered on rect */
+						thisX = 4.5 + timelineXOffset + parseInt(d.lastChild.getAttributeNode("x").nodeValue);
+					}
+					if (d.lastChild.hasOwnProperty("cy")){
+						thisY = (rowHeight * thisRow) + timelineYOffset + parseInt(d.lastChild.getAttributeNode("cy").nodeValue);
+					} else {
+						/* add 4.5 so line is centered on rect */
+						thisY = 4.5 + (rowHeight * thisRow) + timelineYOffset + parseInt(d.lastChild.getAttributeNode("y").nodeValue);
+					}
+					/* add coordinates to string of points */
+					points += thisX + ',' + thisY + ' ';
+			  })
+			};
+
+			/* draw line connecting touchpoints in order */
+			Pablo.polyline({points: points, fill: 'none'})
+				.attr('stroke', '#ddd')
+				.attr('stroke-width', 3)
+				.attr('stroke-miterlimit', 10)
+				.attr('stroke-linejoin','round')
+				.attr('stroke-linecap','round')
+			.appendTo(paper);
 
 			var tmp = Pablo('#tmp').root();
 			Pablo.chevron({shape: 'narrow', fill: '#EAF4E7'}).appendTo(tmp);
