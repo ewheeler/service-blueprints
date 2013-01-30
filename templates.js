@@ -167,7 +167,7 @@ Pablo.template('chw', function(options){
 });
 
 Pablo.template('arrow', function(options){
-	  var config = Pablo.extend({text: '', textColor: '#FFFFFF', height: 50, width: 113, x: 0, y: 0, fill: '#39B54A', background: '#FFFFFF', scale: 1}, options);
+	  var config = Pablo.extend({text: '', textColor: '#FFFFFF', height: 40, width: 113, x: 0, y: 0, fill: '#39B54A', background: '#FFFFFF', scale: 1}, options);
 		var x = config.x,
 				y = config.y,
 				fill = config.fill,
@@ -193,14 +193,14 @@ Pablo.template('arrow', function(options){
 					}).transform('scale', scale)
 				.transform('translate', (x + 5) + ' ' + (y + 5)))
 			.append(
-				Pablo.text({x: (scale * x) + (width/5), y: (height/1.65) + 6, width: 80, height: 80, fill: textColor, class: 'icon-label'})
+				Pablo.text({x: (scale * x) + ((scale * width)/3), y: ((scale * height)/2) + (height/timelineYOffsetFactor), width: 80, height: 80, fill: textColor, class: 'icon-label'})
 				.attr('style', 'font-size: ' + (.70 * scale) + 'em;')
 				.content(text)
 			)
 });
 
 Pablo.template('chevron', function(options){
-	  var config = Pablo.extend({shape: 'default', x: 0, y: 0, height: 50, width: 13.5, fill: '#D0E8CA', background: '#FFFFFF', scale: 1}, options);
+	  var config = Pablo.extend({shape: 'default', x: 0, y: 0, height: 40, width: 13.5, fill: '#D0E8CA', background: '#FFFFFF', scale: 1}, options);
 		if (config.shape == 'narrow'){
 			config.width = 10.5;
 		}
@@ -228,7 +228,7 @@ Pablo.template('chevron', function(options){
 });
 
 Pablo.template('fletch', function(options){
-	  var config = Pablo.extend({height: 50, x: 0, y: 0, stroke: '#00AEEF', background: '#FFFFFF', scale: 1}, options);
+	  var config = Pablo.extend({height: 40, x: 0, y: 0, stroke: '#00AEEF', background: '#FFFFFF', scale: 1}, options);
 		var x = config.x,
 				y = config.y,
 				height = config.height,
