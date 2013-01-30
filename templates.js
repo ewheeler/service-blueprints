@@ -185,6 +185,7 @@ Pablo.template('arrow', function(options){
 				Pablo.polygon({
 					points: points.join(','),
 					fill: fill,
+					'fill-opacity': .9,
 					stroke: background,
 					'stroke-width': 3,
 					'stroke-miterlimit': 10,
@@ -193,7 +194,7 @@ Pablo.template('arrow', function(options){
 					}).transform('scale', scale)
 				.transform('translate', (x + 5) + ' ' + (y + 5)))
 			.append(
-				Pablo.text({x: (scale * x) + ((scale * width)/3), y: ((scale * height)/2) + (height/timelineYOffsetFactor), width: 80, height: 80, fill: textColor, class: 'icon-label'})
+				Pablo.text({x: (scale * x) + ((scale * width)/4), y: ((scale * height)/2) + (height/timelineYOffsetFactor), width: 80, height: 80, fill: textColor, class: 'icon-label'})
 				.attr('style', 'font-size: ' + (.80 * scale) + 'em;')
 				.content(text)
 			)
