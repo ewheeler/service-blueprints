@@ -194,7 +194,7 @@ Pablo.template('arrow', function(options){
 				.transform('translate', (x + 5) + ' ' + (y + 5)))
 			.append(
 				Pablo.text({x: (scale * x) + ((scale * width)/3), y: ((scale * height)/2) + (height/timelineYOffsetFactor), width: 80, height: 80, fill: textColor, class: 'icon-label'})
-				.attr('style', 'font-size: ' + (.70 * scale) + 'em;')
+				.attr('style', 'font-size: ' + (.80 * scale) + 'em;')
 				.content(text)
 			)
 });

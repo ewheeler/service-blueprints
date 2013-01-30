@@ -5,6 +5,10 @@
     <script type="text/javascript" src="pablo.min.js"></script>
     <script type="text/javascript" src="templates.js"></script>
 		<style>
+			@font-face {
+				font-family: "Silkscreen";
+				src: url(#Silkscreen);
+			}
 			.actor-label {
 				text-transform: uppercase;
 				color: #666666;
@@ -16,25 +20,25 @@
 			.icon-label {
 				text-transform: uppercase;
 				color: #666666;
-				font-family: 'Helvetica Neue' Arial sans-serif;
-				font-size: .75em;
-				font-weight: bold;
+				font-family: 'Silkscreen' 'Helvetica Neue' Arial sans-serif;
+				font-size: .8em;
 				text-shadow: 0 1px rgba(255, 255, 255, 0.5);
 				text-align: center;
 			}
 			.touchpoint-label {
 				text-transform: uppercase;
-				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-family: 'Silkscreen' 'Helvetica Neue' Arial sans-serif;
 				font-size: .65em;
 			}
 			.service-component-label {
 				text-transform: uppercase;
-				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-family: 'Silkscreen' 'Helvetica Neue' Arial sans-serif;
 				font-size: .65em;
 				text-shadow: 0 1px rgba(0, 0, 0, 0.25);
 			}
 			.header-tagline {
-				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-family: 'Silkscreen' 'Helvetica Neue' Arial sans-serif;
+				text-shadow: 0 1px rgba(0, 0, 0, 0.25);
 			}
 		</style>
   </head>
@@ -100,6 +104,11 @@
 			var paperWidth = paperHeight * golden;
 			var paper =  Pablo('#paper').root({width: paperWidth, height: paperHeight});
 
+			var silk = Pablo.font({id: 'Silkscreen'})
+				.append(Pablo.fontFace({'font-family': 'Silkscreen'})
+						.append(Pablo.fontFaceSrc().append(Pablo.fontFaceUri().link('slkscr-webfont.svg'))));
+			paper.append(silk);			
+
 			var scale = (.00075 * paperWidth);
 			console.log('scale: ' + scale);
 
@@ -126,8 +135,8 @@
 				.append(Pablo.rect({x: 0, y: 0, width: rowWidth, height: rowHeight, fill: '#92278F'}))
 				.append(Pablo.rapidsms({x: 25, y: 10, scale: .55, rapidFill: '#FFFFFF', smsFill: '#FFFFFF'}))
 				.append(Pablo.text({class: 'header-tagline', x: 20, y: (rowHeight / 2) + 20, width: rowWidth, height: rowHeight, fill: '#FFFFFF'})
-					.attr('style', 'font-size: ' + (.9 * scale) + 'em;')
-					.content('Antenatal care reminders, birth registration, and emergency response'))
+					.attr('style', 'font-size: ' + (1 * scale) + 'em;')
+					.content('Antenatal care reminders, birth registration, & emergency response'))
 			header.appendTo(paper);
 
 			// svg elements and icons for each actor
@@ -249,7 +258,7 @@
 									var x = pointer + offset + 3;
 									// offset every other component
 									// TODO this won't work for every scenario!
-									var y = (30 * (m % 2));
+									var y = (30 * (m % 2)) - 10;
 									var width = (scale * (.95 * key));
 									var group = Pablo.g({class: 'service-component'});
 									group.append(Pablo.rect({fill: color, x: x, y: y,  width: width, height: (scale * 35)}));
