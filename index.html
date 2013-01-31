@@ -6,6 +6,7 @@
     <title>service blueprint</title>
     <script type="text/javascript" src="pablo.min.js"></script>
     <script type="text/javascript" src="templates.js"></script>
+		<link rel="stylesheet" href="fonts/fonts.css">
 		<style>
 			.actor-label {
 				text-transform: uppercase;
@@ -95,11 +96,6 @@
 			var paperWidth = paperHeight * golden;
 			var paper =  Pablo('#paper').root({width: paperWidth, height: paperHeight});
 
-			var silk = Pablo.font({id: 'Silkscreen'})
-				.append(Pablo.fontFace({'font-family': 'Silkscreen'})
-						.append(Pablo.fontFaceSrc().append(Pablo.fontFaceUri().link('slkscr-webfont.svg'))));
-			paper.append(silk);			
-
 			var scale = (.00075 * paperWidth);
 			console.log('scale: ' + scale);
 
@@ -125,7 +121,7 @@
 			var header = Pablo.g({class: 'header', height: (rowHeight * headerSizeInRows), width: rowWidth})
 				.append(Pablo.rect({x: 0, y: 0, width: rowWidth, height: rowHeight, fill: '#92278F', 'fill-opacity': .9}))
 				.append(Pablo.rapidsms({x: 25, y: 10, scale: .55, rapidFill: '#FFFFFF', smsFill: '#FFFFFF'}))
-				.append(Pablo.text({'font-family': 'Silkscreen', class: 'header-tagline', x: 20, y: (rowHeight / 2) + 20, width: rowWidth, height: rowHeight, fill: '#FFFFFF'})
+				.append(Pablo.text({'font-family': 'SilkscreenExpanded', class: 'header-tagline', x: 20, y: (rowHeight / 2) + 20, width: rowWidth, height: rowHeight, fill: '#FFFFFF'})
 					.attr('style', 'font-size: ' + (1 * scale) + 'em;')
 					.content('Antenatal care reminders, birth registration, & emergency response'))
 			header.appendTo(paper);
