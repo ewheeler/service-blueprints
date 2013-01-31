@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>service blueprint</title>
     <script type="text/javascript" src="pablo.min.js"></script>
     <script type="text/javascript" src="templates.js"></script>
@@ -8,14 +10,13 @@
 			.actor-label {
 				text-transform: uppercase;
 				color: #666666;
-				font-family: 'Helvetica Neue' Arial sans-serif;
+				font-family: 'Helvetica Neue', Arial, sans-serif;
 				font-weight: bold;
 				text-shadow: 0 1px rgba(0, 0, 0, 0.125);
 			}
 			.icon-label {
 				text-transform: uppercase;
 				color: #666666;
-				font-family: 'Silkscreen' 'Helvetica Neue' Arial sans-serif;
 				text-shadow: 0 1px rgba(255, 255, 255, 0.5);
 				text-align: center;
 			}
@@ -27,7 +28,6 @@
 				text-shadow: 0 1px rgba(255, 255, 255, 0.5);
 			}
 			.header-tagline {
-				font-family: 'Silkscreen' 'Helvetica Neue' Arial sans-serif;
 				text-shadow: 0 1px rgba(0, 0, 0, 0.5);
 			}
 		</style>
@@ -125,7 +125,7 @@
 			var header = Pablo.g({class: 'header', height: (rowHeight * headerSizeInRows), width: rowWidth})
 				.append(Pablo.rect({x: 0, y: 0, width: rowWidth, height: rowHeight, fill: '#92278F', 'fill-opacity': .9}))
 				.append(Pablo.rapidsms({x: 25, y: 10, scale: .55, rapidFill: '#FFFFFF', smsFill: '#FFFFFF'}))
-				.append(Pablo.text({class: 'header-tagline', x: 20, y: (rowHeight / 2) + 20, width: rowWidth, height: rowHeight, fill: '#FFFFFF'})
+				.append(Pablo.text({'font-family': 'Silkscreen', class: 'header-tagline', x: 20, y: (rowHeight / 2) + 20, width: rowWidth, height: rowHeight, fill: '#FFFFFF'})
 					.attr('style', 'font-size: ' + (1 * scale) + 'em;')
 					.content('Antenatal care reminders, birth registration, & emergency response'))
 			header.appendTo(paper);
@@ -155,7 +155,7 @@
 					var color = icon.attr('fill');
 					if (color === null){
 					  // no fill color? probably a group of paths, so check the first child
-					  color = icon[0].childNodes[0].attributes['fill'].nodeValue;
+					  color = icon[0].childNodes[0].getAttribute('fill');
 					};
 					actorLabel.attr('fill', color);
 
@@ -208,7 +208,16 @@
 								wordWrap(d, i);
 								// until elem.moveToFront() is available, do it manually
 								// https://github.com/dharmafly/pablo/issues/10
-								d.remove();
+								// d.remove() doesnt work in safari.. but
+								// copying the remove source from pablo does.. WTF
+								// However, Pablo(d).remove() does work in safari.
+								// TODO is it better to wrap d with Pablo or just
+								// use the vanilla js
+								var parentNode = d.parentNode;
+                if (parentNode){
+                    parentNode.removeChild(d);
+										timeline.append(d);
+                }
 								timeline.append(d);
 						});
 					} else {
@@ -293,27 +302,32 @@
 				Pablo('#touchpoint-' + (j+1)).each(function(d,i){
 					// determine which row includes this touchpoint
 					var thisRow;
-					var actorName = d.classList[0].split('-')[0];
-					for (var i=0, m=actorNames.length; i<m; i++){
-						if (actorNames[i] === actorName){
-							thisRow = i;
+					var actorName;
+					if (d.hasOwnProperty('classList')){
+						actorName = d.classList[0].split('-')[0];
+					} else {
+						actorName = d.className.baseVal.split(' ')[0].split('-')[0];
+					}
+					for (var k=0, m=actorNames.length; k<m; k++){
+						if (actorNames[k] === actorName){
+							thisRow = k;
 							break;
 						}
 					}
 					// find position of touchpoint, add offsets
 					var thisX;
 					var thisY;
-					if (d.firstChild.hasOwnProperty("cx")){
-						thisX = timelineXOffset + parseInt(d.firstChild.getAttributeNode("cx").nodeValue);
+					if (typeof(d.firstChild["cx"]) !== 'undefined'){
+						thisX = timelineXOffset + (d.firstChild.getAttribute("cx") * 1);
 					} else {
 						// add 4.5 so line is centered on rect
-						thisX = 4.5 + timelineXOffset + parseInt(d.firstChild.getAttributeNode("x").nodeValue);
+						thisX = 4.5 + timelineXOffset + (d.firstChild.getAttribute("x") * 1);
 					}
-					if (d.firstChild.hasOwnProperty("cy")){
-						thisY = (rowHeight * thisRow) + timelineYOffset + parseInt(d.firstChild.getAttributeNode("cy").nodeValue);
+					if (typeof(d.firstChild["cy"]) !== 'undefined'){
+						thisY = (rowHeight * thisRow) + timelineYOffset + (d.firstChild.getAttribute("cy") * 1);
 					} else {
 						// add 4.5 so line is centered on rect
-						thisY = 4.5 + (rowHeight * thisRow) + timelineYOffset + parseInt(d.firstChild.getAttributeNode("y").nodeValue);
+						thisY = 4.5 + (rowHeight * thisRow) + timelineYOffset + (d.firstChild.getAttribute("y") * 1);
 					}
 					// add coordinates to string of points
 					points += thisX + ',' + thisY + ' ';
@@ -339,8 +353,8 @@
 					var longestWordLength = Math.max.apply(Math, words.map(function (el) { return el.length }));
 					var line = new Array();
 					var word;
-					var x = parseInt(d.getAttributeNode("x").nodeValue);
-					var y = parseInt(d.getAttributeNode("y").nodeValue);
+					var x = d.getAttribute("x");
+					var y = d.getAttribute("y");
 					// clear element's textContent
 					d.textContent = '';
 					// adjust vertical position based on how many lines will be used
@@ -351,7 +365,7 @@
 						var wordX = x;
 						var wordY = y - (words.length * (10 * scale));
 						// wrap each word in a tspan
-						Pablo.tspan({x: wordX, y: wordY, class: 'icon-label-tspan'})
+						Pablo.tspan({'font-family': 'Silkscreen', x: wordX, y: wordY, class: 'icon-label-tspan'})
 							.content(word)
 							.appendTo(d);
 					} while (words.length);
@@ -359,5 +373,9 @@
 			}
 
 		</script>
+	<!--[if lt IE 7 ]>
+		<script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.2/CFInstall.min.js"></script>
+		<script>window.attachEvent("onload",function(){CFInstall.check({mode:"overlay"})})</script>
+	<![endif]-->
   </body>
 </html>
