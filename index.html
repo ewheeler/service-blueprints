@@ -48,14 +48,10 @@
 				{1000: {'mother': 'postpartum and breastfeeding', 'child': 'childhood'}},
 		 	]
 
-			// TODO these numbers are pretty much arbitrary
 			var serviceComponents = [
-				{94: 'User Registration'},
-				{94: 'Patient Registration'},
-				{170: 'Reminder'},
-				{170: 'Confirmation'},
-				{200: 'Birth Registration'},
-				{200: 'Emergency Response'},
+				{'start': 0, 'stop': 135, 'components': ['User Registration', 'Patient Registration']},
+				{'start': 135, 'stop': 270, 'components': ['Reminder', 'Confirmation']},
+				{'start': 270, 'stop': 405, 'components': ['Birth Registration', 'Emergency Response']},
 			]
 
 			var touchpoints = [
@@ -69,10 +65,10 @@
 				{281: {'chw': 'birth registered'}},
 				{285: {'clinic': 'birth emergency: clinic notified', 'point-type': 'optional'}},
 				{285: {'district': 'birth emergency: district notified', 'point-type': 'optional'}},
-				//{271: {'chw': 'PNC reminder'}},
-				//{276: {'clinic': 'PNC visit'}},
-				//{307: {'chw': 'PNC reminder'}},
-				//{312: {'clinic': 'PNC visit'}},
+				//{311: {'chw': 'PNC reminder'}},
+				//{316: {'clinic': 'PNC visit'}},
+				//{367: {'chw': 'PNC reminder'}},
+				//{372: {'clinic': 'PNC visit'}},
 				//{630: {'chw': 'PNC reminder'}},
 				//{635: {'clinic': 'PNC visit'}},
 			]
@@ -255,17 +251,15 @@
 							}
 						}
 						if (actorNames[i] === 'phone'){
-							var pointer = timelineYOffset - (15 * scale);
 							for (var m=0, n=serviceComponents.length; m<n; m++){
-								for (var key in serviceComponents[m]){
-									var x = pointer + ((offset + 6) * scale);
-									// offset every other component
-									// TODO this won't work for every scenario!
-									var y = (((offset + 36) * scale) * (m % 2));
-									var width = (scale * key);
+								var pointer = 0;
+								for (var s=0, t=serviceComponents[m]['components'].length; s<t; s++){
+									var x = (offset * scale * 12) + (serviceComponents[m]['start'] * scale) + pointer;
+									var y = (((offset + 30) * scale) * (s + 1));
+									var width = (scale * serviceComponents[m]['stop']) - x;
 									var group = Pablo.g({class: 'service-component'});
-									group.append(Pablo.rect({fill: color, 'fill-opacity': .25, x: x, y: y,  width: width, height: (scale * 30)}));
-									var words = serviceComponents[m][key].split(' ');
+									group.append(Pablo.rect({fill: color, 'fill-opacity': .25, x: x, y: y,  width: width, height: (scale * 25)}));
+									var words = serviceComponents[m]['components'][s].split(' ');
 									var label = Pablo.text({x: x, y: y, width: 20, height: 20})
 											.attr('class', 'service-component-label');
 									do {
@@ -275,18 +269,14 @@
 										Pablo.tspan({'font-family': 'Silkscreen', x: wordX, y: wordY, class: 'service-component-label-tspan'})
 											.attr('style', 'font-size: ' + (.7 * scale) + 'em;')
 											.attr('fill', color)
-											//.attr('fill', '#000000')
 											.content(word)
 											.appendTo(label);
 									} while (words.length);
 									label.appendTo(group);
-									group.transform('translate', timelineXOffset + ' ' + (timelineYOffset - (offset * 25 * scale)));
+									group.transform('translate', timelineXOffset + ' ' + (timelineYOffset - ((offset + 35) * scale)));
 									group.appendTo(row);
 								}
-								// TODO this won't work for every scenario!
-								if (m % 2) {
-									pointer = (x + width);
-								}
+								pointer = (x + width);
 							}
 						}
 					}
