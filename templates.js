@@ -194,7 +194,7 @@ Pablo.template('arrow', function(options){
 					}).transform('scale', scale)
 				.transform('translate', (x + 5) + ' ' + (y + 5)))
 			.append(
-				Pablo.text({'font-family': 'Silkscreen', x: (scale * x) + ((scale * width)/4), y: ((scale * height)/2) + (height/timelineYOffsetFactor), width: 80, height: 80, fill: textColor, class: 'icon-label'})
+				Pablo.text({'font-family': 'Silkscreen', x: (scale * x) + ((scale * width)/4), y: ((scale * height)/2) + (height/5), width: 80, height: 80, fill: textColor, class: 'icon-label'})
 				.attr('style', 'font-size: ' + (.80 * scale) + 'em;')
 				.content(text)
 			)
