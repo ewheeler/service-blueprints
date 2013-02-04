@@ -57,7 +57,8 @@
 			]
 
 			var rwandaPNCServiceComponents = [
-				{'start': 270, 'stop': 640, 'components': ['Reminder', 'Confirmation', 'Growth Monitoring']},
+				{'start': 270, 'stop': 640, 'components': ['Reminder', 'Confirmation']},
+				{'start': 270, 'stop': 1000, 'components': ['Growth Monitoring']},
 				{'start': 640, 'stop': 800, 'components': ['Chillin']},
 			]
 
@@ -97,7 +98,7 @@
 			var ancDescription = 'Antenatal care reminders, birth registration, & emergency response';
 			var pncDescription = 'Postnatal care reminders & growth monitoring';
 			drawBlueprint("#anc", 600, rwandaActorNames, rwandaANCServiceComponents, rwandaANCTouchpoints, ancDescription);
-			//drawBlueprint("#pnc", 600, rwandaActorNames, rwandaPNCServiceComponents, rwandaPNCTouchpoints, pncDescription);
+			drawBlueprint("#pnc", 600, rwandaActorNames, rwandaPNCServiceComponents, rwandaPNCTouchpoints, pncDescription);
 
 		</script>
 	<!--[if lt IE 7 ]>

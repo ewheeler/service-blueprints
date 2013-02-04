@@ -173,15 +173,29 @@ function drawBlueprint(selector, height, actors, components, touchpoints, descri
 						}
 						if (actorNames[i] === 'phone'){
 							var maxComponents = 0;
+							// sort components by magnitude (widest segment first)
+							serviceComponents.sort(compareMagnitudes);
 							for (var m=0, n=serviceComponents.length; m<n; m++){
 								maxComponents = Math.max(maxComponents, serviceComponents[m]['components'].length);
+								if (m > 0) {
+									if (segmentContainsPoint(serviceComponents[m-1]['start'], serviceComponents[m-1]['stop'], serviceComponents[m]['start']) || segmentContainsPoint(serviceComponents[m-1]['start'], serviceComponents[m-1]['stop'], serviceComponents[m]['stop'])) {
+										// if this segment intersects previous segment,
+										// increase maxComponents
+										maxComponents += 1;
+										// and flag this segment for a new row
+										serviceComponents[m]['newRow'] = true;
+									}
+								}
 							}
-							console.log(maxComponents);
+							var thisRow = 0;
 							for (var m=0, n=serviceComponents.length; m<n; m++){
 								var pointer = 0;
+								if (serviceComponents[m]['newRow']){
+									thisRow += 1;
+								}
 								for (var s=0, t=serviceComponents[m]['components'].length; s<t; s++){
 									var x = (offset * scale * 12) + (serviceComponents[m]['start'] * scale) + pointer;
-									var y = (((offset + 30) * scale) * (s + 1));
+									var y = (((offset + 30) * scale) * (thisRow + s + 1));
 									var width = (scale * serviceComponents[m]['stop']) - x;
 									var group = Pablo.g({class: 'service-component'});
 									group.append(Pablo.rect({fill: color, 'fill-opacity': .25, x: x, y: y,  width: width, height: (scale * 25)}));
@@ -282,5 +296,22 @@ function drawBlueprint(selector, height, actors, components, touchpoints, descri
 							.appendTo(d);
 					} while (words.length);
 				}
+			}
+
+			function compareMagnitudes(a,b) {
+				aMag = (a['stop'] - a['start']);
+				bMag = (b['stop'] - b['start']);
+				if (aMag < bMag)
+					return 1;
+				if (aMag > bMag)
+					return -1;
+				return 0;
+			}
+
+			function segmentContainsPoint(segStart, segStop, point){
+				if ((point > segStart) && (point < segStop)){
+					return true;
+				}
+				return false;
 			}
 }
